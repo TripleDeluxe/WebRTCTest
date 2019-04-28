@@ -28,8 +28,10 @@ pc.onicecandidate = (event => event.candidate ? sendMessage(JSON.stringify({ 'se
 //    //hangupButton.disabled = false;
 //    return false;
 //}
-pc.ontrack = ({ streams: [stream] }) => friendsVideo.srcObject = stream;
-
+pc.ontrack = ({ streams: [stream] }) => {
+    friendsVideo.srcObject = stream;
+    console.log(stream);
+}
 //db.collection("userTest").doc("dede").set({"nom": "didier" , "nouvelAppel":""} ).catch((err) => {
 //    console.log("erreur set dede " + err);
 //});
