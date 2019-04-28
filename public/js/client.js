@@ -132,15 +132,22 @@ function showFriendsFace() {
         .then(() => sendMessage(JSON.stringify({ 'sender': yourId, 'sdp': pc.localDescription })));
 }
 
-async function openCall(pc) {
-    const gumStream = await navigator.mediaDevices.getUserMedia(
-        { video: true, audio: true });
-    for (const track of gumStream.getTracks()) {
-        pc.addTrack(track, gumStream);
-    }
-    yourVideo.srcObject = gumStream;
-}
+//async function openCall(pc) {
+//    const gumstream = await navigator.mediadevices.getusermedia(
+//        { video: true, audio: true });
+
+//    for (const track of gumstream.gettracks()) {
+//        pc.addtrack(track, gumstream);
+//    }
+//    yourVideo.srcObject = gumStream;
+//}
 
 //showMyFace();
+//openCall(pc);
 
-openCall(pc);
+navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((mediaStream) => {
+    for (const track of mediaStream.getTracks()) {
+        pc.addTrack(track, mediaStream);
+    }
+    yourVideo.srcObject = mediaStream;
+});
