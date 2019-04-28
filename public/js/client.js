@@ -150,4 +150,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((mediaStr
         pc.addTrack(track, mediaStream);
     }
     yourVideo.srcObject = mediaStream;
+    console.log(mediaStream);
+}).catch((err) => {
+    console.log(err);
 });
