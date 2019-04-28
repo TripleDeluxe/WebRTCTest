@@ -138,6 +138,7 @@ async function openCall(pc) {
     for (const track of gumStream.getTracks()) {
         pc.addTrack(track, gumStream);
     }
+    yourVideo.srcObject = gumStream;
 }
 
 //showMyFace();
