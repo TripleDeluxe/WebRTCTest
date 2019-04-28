@@ -1,0 +1,13 @@
+{
+  "name": "web-rtctest",
+  "version": "0.0.0",
+  "description": "WebRTCTest",
+  "main": "server.js",
+  "author": {
+    "name": ""
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "firebase-admin": "^7.3.0"
+  }
+}

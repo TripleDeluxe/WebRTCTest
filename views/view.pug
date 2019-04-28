@@ -1,0 +1,18 @@
+doctype html
+html
+    head
+        meta(name="charset" content="utf-8")
+        title Test WebRTC
+        meta(name="author" content="Thomas Guérin")
+        block scripts
+            script(src="https://www.gstatic.com/firebasejs/5.10.0/firebase-app.js")
+            script(src="https://www.gstatic.com/firebasejs/5.9.3/firebase-firestore.js")
+        style
+            include ../public/css/style.css
+    body
+        button(type="button" onclick="showFriendsFace()") CLIQUE
+        br
+        video(id="myVideo" src="http://localhost:8080/video/videotest.mp4" autoplay muted )
+        video(id="otherVideo" autoplay)
+        script(src="/js/client.js")
+    

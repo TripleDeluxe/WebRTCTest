@@ -1,0 +1,3 @@
+C:\Users\IBM_ADMIN\source\repos\WebRTCTest\WebRTCTest\obj\Debug\WebRTCTest.njsprojAssemblyReference.cache
+C:\Users\IBM_ADMIN\source\repos\WebRTCTest\WebRTCTest\obj\Debug\WebRTCTest.njsproj.CoreCompileInputs.cache
+C:\Users\IBM_ADMIN\source\repos\WebRTCTest\WebRTCTest\bin\Microsoft.NodejsTools.WebRole.dll
