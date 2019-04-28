@@ -23,11 +23,12 @@ pc.onicecandidateerror = (event) => {
 pc.onicecandidate = (event => event.candidate ? sendMessage(JSON.stringify({ 'sender': yourId, 'ice': event.candidate })) : console.log("Sent All Ice"));
 //DEPRECATED
 //pc.onaddstream = (event => friendsVideo.srcObject = event.stream);
-pc.ontrack = e => {
-    friendsVideo.srcObject = e.streams[0];
-    //hangupButton.disabled = false;
-    return false;
-}
+//pc.ontrack = e => {
+//    friendsVideo.srcObject = e.streams[0];
+//    //hangupButton.disabled = false;
+//    return false;
+//}
+pc.ontrack = ({ streams: [stream] }) => videoElem.srcObject = stream;
 
 //db.collection("userTest").doc("dede").set({"nom": "didier" , "nouvelAppel":""} ).catch((err) => {
 //    console.log("erreur set dede " + err);
@@ -131,4 +132,14 @@ function showFriendsFace() {
         .then(() => sendMessage(JSON.stringify({ 'sender': yourId, 'sdp': pc.localDescription })));
 }
 
-showMyFace();
+async function openCall(pc) {
+    const gumStream = await navigator.mediaDevices.getUserMedia(
+        { video: true, audio: true });
+    for (const track of gumStream.getTracks()) {
+        pc.addTrack(track, gumStream);
+    }
+}
+
+//showMyFace();
+
+openCall(pc);
