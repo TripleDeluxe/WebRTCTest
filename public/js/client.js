@@ -18,9 +18,18 @@ var yourId = Math.floor(Math.random() * 1000000000);
 var servers = { 'iceServers': [{ 'urls': 'stun:stun.services.mozilla.com' }, { 'urls': 'stun:stun.l.google.com:19302' }, { 'urls': 'turn:numb.viagenie.ca', 'credential': 'Guerin@35', 'username': 'guerin.thomas35000@gmail.com' }] };
 var pc = new RTCPeerConnection(servers);
 pc.onicecandidateerror = (event) => {
-    console.log(event);
+    console.log("ice candidate error " + event);
 }
-pc.onicecandidate = (event => event.candidate ? sendMessage(JSON.stringify({ 'sender': yourId, 'ice': event.candidate })) : console.log("Sent All Ice"));
+pc.onicecandidate = (event => event.candidate ? sendMessage(JSON.stringify({ 'sender': yourId, 'ice': event.candidate })) : verifyIceCandidates());
+//Si l'ICE candidate n'est pas bon (la connexion n'est pas passée) on relance une offer
+function verifyIceCandidates() {
+    console.log("verify");
+    console.log("Sent All Ice");
+    if (pc.connectionState === "failed") {
+        sendOffer();
+        console.log("failed");
+    }
+}
 //DEPRECATED
 //pc.onaddstream = (event => friendsVideo.srcObject = event.stream);
 //pc.ontrack = e => {
@@ -29,8 +38,17 @@ pc.onicecandidate = (event => event.candidate ? sendMessage(JSON.stringify({ 'se
 //    return false;
 //}
 pc.ontrack = ({ streams: [stream] }) => {
-    friendsVideo.srcObject = stream;
-    console.log(stream);
+    //window.stream ==> passage du stream dans l'objet window de la page web
+    window.stream = stream;
+    if ("srcObject" in friendsVideo) {
+        friendsVideo.srcObject = stream;
+    } else {
+        friendsVideo.src = window.URL.createObjectURL(stream);
+    }
+    friendsVideo.onloadedmetadata = function (e) {
+        console.log("onloadedmetadata");
+        friendsVideo.play();
+    };
 }
 //db.collection("userTest").doc("dede").set({"nom": "didier" , "nouvelAppel":""} ).catch((err) => {
 //    console.log("erreur set dede " + err);
@@ -40,8 +58,8 @@ var dedeRef = db.collection("userTest").doc("dede");
 var isFirstSnapshot = true;
 
 dedeRef.onSnapshot(function (doc) {
-    var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-    console.log(source, " data: ", doc.data());
+   // var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+    //console.log(source, " data: ", doc.data());
 
     if (isFirstSnapshot) {
         isFirstSnapshot = false;
@@ -93,9 +111,9 @@ function readMessage(data) {
     if (data != "") {
         var msg = JSON.parse(data);
         var sender = msg.sender;
-        
+        console.log("message reçu : " + data);
         if (sender != yourId) {
-            console.log("readMessage : " + data);
+            console.log("message reçu : " + data);
             if (msg.ice != undefined) {
                 pc.addIceCandidate(new RTCIceCandidate(msg.ice));
             } else if (msg.sdp.type == "offer") {
@@ -114,7 +132,7 @@ function readMessage(data) {
             //}).catch((err) => {
             //    console.log("Erreur lors de l'effaçage de nouvelAppel de " + yourId);
             //});
-        }
+        } 
     }
 };
 
@@ -128,7 +146,7 @@ function showMyFace() {
     //var audioStreamTrack = 
 }
 
-function showFriendsFace() {
+function sendOffer() {
     pc.createOffer({ 'offerToReceiveAudio': true, 'offerToReceiveVideo': true })
         .then(offer => pc.setLocalDescription(offer))
         .then(() => sendMessage(JSON.stringify({ 'sender': yourId, 'sdp': pc.localDescription })));
@@ -150,9 +168,18 @@ function showFriendsFace() {
 navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((mediaStream) => {
     for (const track of mediaStream.getTracks()) {
         pc.addTrack(track, mediaStream);
+        console.log("mediastream id local : " + mediaStream.id);
     }
     yourVideo.srcObject = mediaStream;
     console.log(mediaStream);
 }).catch((err) => {
     console.log(err);
-});
+    });
+
+pc.onconnectionstatechange = function(event) {
+    console.log("connection stage changed : " + pc.connectionState);
+};
+
+pc.oniceconnectionstatechange = function(event) {
+    console.log("ice connection stage changed : " + pc.iceConnectionState);
+};
