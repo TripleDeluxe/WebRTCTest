@@ -1,4 +1,4 @@
-
+import adapter from 'webrtc-adapter';
 
 //Create an account on Firebase, and use the credentials they give you in place of the following
 var config = {
