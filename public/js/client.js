@@ -1,4 +1,5 @@
-
+//'use strict'
+//import adapter from 'webrtc-adapter';
 
 //Create an account on Firebase, and use the credentials they give you in place of the following
 var config = {
@@ -15,7 +16,7 @@ var db = firebase.firestore();
 var yourVideo = document.getElementById("myVideo");
 var friendsVideo = document.getElementById("otherVideo");
 var yourId = Math.floor(Math.random() * 1000000000);
-var servers = { 'iceServers': [{ 'urls': 'stun:stun.services.mozilla.com' }, { 'urls': 'stun:stun.l.google.com:19302' }, { 'urls': 'turn:numb.viagenie.ca', 'credential': 'Guerin@35', 'username': 'guerin.thomas35000@gmail.com' }] };
+var servers = { "iceServers": [{ "urls": "stun:stun.l.google.com:19302" }, { "urls": "turn:numb.viagenie.ca", "credential": "Guerin@35", "username": "guerin.thomas35000@gmail.com" }] };
 var pc = new RTCPeerConnection(servers);
 pc.onicecandidateerror = (event) => {
     console.log("ice candidate error " + event);
@@ -26,7 +27,6 @@ function verifyIceCandidates() {
     console.log("verify");
     console.log("Sent All Ice");
     if (pc.connectionState === "failed") {
-        sendOffer();
         console.log("failed");
     }
 }
@@ -109,13 +109,19 @@ function clearCollection() {
 
 function readMessage(data) {
     if (data != "") {
+
         var msg = JSON.parse(data);
         var sender = msg.sender;
-        console.log("message reçu : " + data);
+
         if (sender != yourId) {
             console.log("message reçu : " + data);
             if (msg.ice != undefined) {
                 pc.addIceCandidate(new RTCIceCandidate(msg.ice));
+            } else if (msg.openDoor == true) {
+                //JOUER UN SON
+            } else if (msg.initRTC == true) {
+                console.log("initRTC");
+                sendOffer();
             } else if (msg.sdp.type == "offer") {
                 pc.setRemoteDescription(new RTCSessionDescription(msg.sdp))
                     .then(() => pc.createAnswer())
@@ -152,6 +158,10 @@ function sendOffer() {
         .then(() => sendMessage(JSON.stringify({ 'sender': yourId, 'sdp': pc.localDescription })));
 }
 
+function call() {
+    sendMessage("nouvelAppel");
+}
+
 //async function openCall(pc) {
 //    const gumstream = await navigator.mediadevices.getusermedia(
 //        { video: true, audio: true });
@@ -174,7 +184,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((mediaStr
     console.log(mediaStream);
 }).catch((err) => {
     console.log(err);
-    });
+});
 
 pc.onconnectionstatechange = function(event) {
     console.log("connection stage changed : " + pc.connectionState);
