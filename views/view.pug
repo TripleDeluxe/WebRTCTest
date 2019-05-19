@@ -7,10 +7,11 @@ html
         block scripts
             script(src="https://www.gstatic.com/firebasejs/5.10.0/firebase-app.js")
             script(src="https://www.gstatic.com/firebasejs/5.9.3/firebase-firestore.js")
+            script(src="https://webrtc.github.io/adapter/adapter-latest.js" type="module")
         style
             include ../public/css/style.css
     body
-        button(type="button" onclick="sendOffer()") CLIQUE
+        button(type="button" onclick="call()") CLIQUE
         br
         video(id="myVideo" autoplay muted )
         video(id="otherVideo" autoplay)
